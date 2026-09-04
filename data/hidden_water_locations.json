@@ -1,0 +1,10 @@
+{
+  "description": "Ground truth water-rich locations for evaluation only. Never read by rover_control or drone_control code — only by the evaluation/scoring script.",
+  "world_bounds": {"x_min": -25, "x_max": 25, "y_min": -25, "y_max": 25},
+  "water_locations": [
+    {"id": "water_1", "x": 12.0, "y": 8.0, "water_score": 0.92},
+    {"id": "water_2", "x": -18.0, "y": -5.0, "water_score": 0.85},
+    {"id": "water_3", "x": 3.0, "y": -16.0, "water_score": 0.78},
+    {"id": "water_4", "x": -9.0, "y": 19.0, "water_score": 0.65}
+  ]
+}
