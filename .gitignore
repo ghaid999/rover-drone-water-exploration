@@ -3,3 +3,8 @@ __pycache__/
 build/
 install/
 log/
+data/groundwater_dataset/Shalatein Paper/
+data/groundwater_dataset/*.zip
+data/swed_sample/train/
+data/swed_sample/test/
+data/swed_sample/*.zip
