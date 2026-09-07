@@ -1,9 +1,10 @@
 import pickle
+import os
 import numpy as np
 from feature_generator import get_features_for_location, FEATURE_ORDER
 
-MODEL_PATH = "groundwater_potential_model_final.pkl"
-WATER_LOCATIONS_PATH = "../data/hidden_water_locations.json"
+MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "groundwater_potential_model_final.pkl")
+WATER_LOCATIONS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "hidden_water_locations.json")
 
 
 def load_model(path=MODEL_PATH):
