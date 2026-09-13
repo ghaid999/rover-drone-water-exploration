@@ -1,10 +1,155 @@
 {
-  "description": "Ground truth water-rich locations for evaluation only. Never read by rover_control or drone_control code — only by the evaluation/scoring script.",
-  "world_bounds": {"x_min": -25, "x_max": 25, "y_min": -25, "y_max": 25},
+  "description": "Real groundwater well locations (Shalatein, Egypt), mapped into simulated-world coordinates via the Option 2 real-data feature generator. Replaces the earlier arbitrary/invented hidden water locations.",
+  "world_bounds": {
+    "x_min": -25,
+    "x_max": 25,
+    "y_min": -25,
+    "y_max": 25
+  },
   "water_locations": [
-    {"id": "water_1", "x": 12.0, "y": 8.0, "water_score": 0.92},
-    {"id": "water_2", "x": -18.0, "y": -5.0, "water_score": 0.85},
-    {"id": "water_3", "x": 3.0, "y": -16.0, "water_score": 0.78},
-    {"id": "water_4", "x": -9.0, "y": 19.0, "water_score": 0.65}
+    {
+      "id": "real_well_2",
+      "x": 7.397,
+      "y": 9.849,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_3",
+      "x": 4.913,
+      "y": 9.273,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_4",
+      "x": 11.55,
+      "y": -8.428,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_5",
+      "x": 7.466,
+      "y": -10.005,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_13",
+      "x": 24.651,
+      "y": -20.607,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_15",
+      "x": 11.865,
+      "y": -8.925,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_16",
+      "x": 10.56,
+      "y": -10.115,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_17",
+      "x": 11.183,
+      "y": -6.76,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_18",
+      "x": 9.372,
+      "y": -9.965,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_20",
+      "x": 7.397,
+      "y": -10.161,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_21",
+      "x": 12.645,
+      "y": 4.301,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_22",
+      "x": 7.747,
+      "y": 6.571,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_23",
+      "x": 7.06,
+      "y": 9.237,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_24",
+      "x": 6.243,
+      "y": 11.734,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_30",
+      "x": 6.569,
+      "y": 9.148,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_31",
+      "x": 6.168,
+      "y": 8.319,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_32",
+      "x": 7.434,
+      "y": 9.759,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_33",
+      "x": 7.109,
+      "y": 9.296,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_34",
+      "x": 7.618,
+      "y": -9.882,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_35",
+      "x": 5.66,
+      "y": -10.025,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_36",
+      "x": 13.125,
+      "y": -7.065,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_37",
+      "x": 6.378,
+      "y": 11.769,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_38",
+      "x": 3.053,
+      "y": 11.737,
+      "water_score": 1.0
+    },
+    {
+      "id": "real_well_39",
+      "x": 12.461,
+      "y": -24.565,
+      "water_score": 1.0
+    }
   ]
 }

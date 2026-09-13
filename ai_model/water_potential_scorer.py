@@ -18,10 +18,10 @@ def get_water_potential_score(x, y, model, rng=None):
     Returns (score, closeness, features) where score is the model's predicted
     probability that this location has groundwater potential (0.0 to 1.0).
     """
-    features, closeness = get_features_for_location(x, y, WATER_LOCATIONS_PATH, rng)
+    features, valid = get_features_for_location(x, y, WATER_LOCATIONS_PATH, rng)
     feature_vector = np.array([[features[name] for name in FEATURE_ORDER]])
     probability = model.predict_proba(feature_vector)[0][1]  # index 1 = "water" class
-    return float(probability), closeness, features
+    return float(probability), valid, features
 
 
 if __name__ == "__main__":
