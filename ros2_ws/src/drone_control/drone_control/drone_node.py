@@ -40,17 +40,21 @@ class DroneNode(Node):
         self.result_pub.publish(result)
 
     def _move_to(self, x, y):
-        """Simplified kinematic movement: send a brief forward velocity command
-        as a visual/simulation cue, then stop. Position for scoring purposes is
-        taken directly from the requested target, consistent with the drone's
-        documented kinematic simplification (Day 2)."""
+        """Simplified kinematic movement: send a repeated forward velocity
+        command as a visual/simulation cue (Gazebo VelocityControl requires a
+        continuous command stream to work reliably), then explicitly stop.
+        Position for scoring purposes is taken directly from the requested
+        target, consistent with the drone's documented kinematic simplification."""
         move_cmd = Twist()
-        move_cmd.linear.x = 1.0
-        self.cmd_vel_pub.publish(move_cmd)
-        time.sleep(1.0)
+        move_cmd.linear.z = 0.3
+        for _ in range(15):
+            self.cmd_vel_pub.publish(move_cmd)
+            time.sleep(0.1)
 
         stop_cmd = Twist()
-        self.cmd_vel_pub.publish(stop_cmd)
+        for _ in range(5):
+            self.cmd_vel_pub.publish(stop_cmd)
+            time.sleep(0.1)
 
 
 def main(args=None):

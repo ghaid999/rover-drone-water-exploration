@@ -1,20 +1,41 @@
+import math
 import random
 import rclpy
 from rclpy.node import Node
-from rclpy.parameter import Parameter
 from geometry_msgs.msg import Point, Twist
+from nav_msgs.msg import Odometry
 from std_msgs.msg import Float32MultiArray
 
-# Mission states
 EXPLORING = "EXPLORING"
 SURVEYING = "SURVEYING"
 INVESTIGATING = "INVESTIGATING"
 DONE = "DONE"
 
-# World bounds (matching Day 2's 50x50m world, hidden_water_locations.json bounds)
 WORLD_MIN = -24.0
 WORLD_MAX = 24.0
 N_CANDIDATES = 5
+
+ARRIVAL_DISTANCE = 1.0       # metres; close enough counts as "arrived"
+MAX_LINEAR_SPEED = 0.5
+MAX_ANGULAR_SPEED = 0.8
+HEADING_TOLERANCE = 0.15     # radians (~8.6 deg); turn in place if off by more than this
+INVESTIGATE_TIMEOUT_TICKS = 120  # safety cap so a bad path can't run forever
+
+
+def yaw_from_quaternion(q):
+    # Standard quaternion-to-yaw conversion (rotation about Z only, which is
+    # all that matters for a ground rover)
+    siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
+    cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
+    return math.atan2(siny_cosp, cosy_cosp)
+
+
+def normalize_angle(angle):
+    while angle > math.pi:
+        angle -= 2.0 * math.pi
+    while angle < -math.pi:
+        angle += 2.0 * math.pi
+    return angle
 
 
 class RoverNode(Node):
@@ -29,12 +50,21 @@ class RoverNode(Node):
         self.survey_result_sub = self.create_subscription(
             Float32MultiArray, "/drone_survey_result", self.handle_survey_result, 10
         )
+        self.odom_sub = self.create_subscription(
+            Odometry, "/odometry", self.handle_odometry, 10
+        )
+
+        self.current_x = 0.0
+        self.current_y = 0.0
+        self.current_yaw = 0.0
+        self.odom_received = False
 
         self.state = EXPLORING
         self.elapsed = 0.0
         self.candidates = []
         self.results = []
         self.pending_candidate_index = None
+        self.investigate_ticks = 0
 
         self.timer_period = 1.0
         self.timer = self.create_timer(self.timer_period, self.tick)
@@ -42,6 +72,12 @@ class RoverNode(Node):
         self.get_logger().info(
             f"Rover mission started. Exploring for {self.exploration_duration:.0f}s before deploying drone."
         )
+
+    def handle_odometry(self, msg: Odometry):
+        self.current_x = msg.pose.pose.position.x
+        self.current_y = msg.pose.pose.position.y
+        self.current_yaw = yaw_from_quaternion(msg.pose.pose.orientation)
+        self.odom_received = True
 
     def tick(self):
         if self.state == EXPLORING:
@@ -64,8 +100,7 @@ class RoverNode(Node):
                 f"Exploration window complete ({self.elapsed:.0f}s). No independent ground-based "
                 f"water detection available (documented simplification) -- deploying drone."
             )
-            stop_cmd = Twist()
-            self.cmd_vel_pub.publish(stop_cmd)
+            self.cmd_vel_pub.publish(Twist())  # stop
 
             self.candidates = self._generate_candidates()
             self.get_logger().info(f"Generated {len(self.candidates)} candidate survey points.")
@@ -93,7 +128,7 @@ class RoverNode(Node):
         self.survey_request_pub.publish(msg)
 
     def _do_survey_step(self):
-        pass  # waiting for handle_survey_result; nothing to do per-tick here
+        pass
 
     def handle_survey_result(self, msg: Float32MultiArray):
         if self.state != SURVEYING:
@@ -116,21 +151,45 @@ class RoverNode(Node):
         self.target = best
         self.investigate_ticks = 0
         self.state = INVESTIGATING
+        self.get_logger().info(
+            f"Navigating from current position ({self.current_x:.2f}, {self.current_y:.2f}) "
+            f"to target ({self.target[0]:.2f}, {self.target[1]:.2f})"
+        )
 
     def _do_investigate(self):
-        move_cmd = Twist()
-        move_cmd.linear.x = 0.5
-        self.cmd_vel_pub.publish(move_cmd)
         self.investigate_ticks += 1
 
-        if self.investigate_ticks >= 10:
-            stop_cmd = Twist()
-            self.cmd_vel_pub.publish(stop_cmd)
+        target_x, target_y = self.target[0], self.target[1]
+        dx = target_x - self.current_x
+        dy = target_y - self.current_y
+        distance = math.hypot(dx, dy)
+
+        if distance <= ARRIVAL_DISTANCE or self.investigate_ticks >= INVESTIGATE_TIMEOUT_TICKS:
+            self.cmd_vel_pub.publish(Twist())
+            reason = "arrived" if distance <= ARRIVAL_DISTANCE else "timeout (safety cap reached)"
             self.get_logger().info(
-                f"Mission complete. Investigated target ({self.target[0]:.2f}, {self.target[1]:.2f}), "
-                f"final score={self.target[2]:.3f}"
+                f"Mission complete ({reason}). Final position ({self.current_x:.2f}, {self.current_y:.2f}), "
+                f"distance to target: {distance:.2f}m. Investigated target "
+                f"({target_x:.2f}, {target_y:.2f}), final score={self.target[2]:.3f}"
             )
             self.state = DONE
+            return
+
+        desired_heading = math.atan2(dy, dx)
+        heading_error = normalize_angle(desired_heading - self.current_yaw)
+
+        move_cmd = Twist()
+        if abs(heading_error) > HEADING_TOLERANCE:
+            # Turn in place toward the target first
+            move_cmd.angular.z = max(-MAX_ANGULAR_SPEED, min(MAX_ANGULAR_SPEED, heading_error))
+            move_cmd.linear.x = 0.0
+        else:
+            # Facing roughly the right way -- drive forward, with a little
+            # ongoing steering correction
+            move_cmd.linear.x = MAX_LINEAR_SPEED
+            move_cmd.angular.z = max(-0.3, min(0.3, heading_error))
+
+        self.cmd_vel_pub.publish(move_cmd)
 
 
 def main(args=None):

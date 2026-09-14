@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<sdf version="1.6">
+    <model name="martian_surface">
+        <static>true</static>
+        <pose>40 0 -25 1.57 0 0</pose>
+        <link name="base_link">
+            <visual name="base_link_visual">
+                <geometry>
+                    <mesh>
+                        <uri>models://martian_surface/resources/martian_surface.glb</uri>
+                        <scale>30 30 30</scale>
+                    </mesh>
+                </geometry>
+            </visual>
+        </link>
+    </model>
+</sdf>

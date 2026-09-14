@@ -14,6 +14,18 @@
       <render_engine>ogre2</render_engine>
     </plugin>
 
+    <gui fullscreen="0">
+      <plugin filename="MinimalScene" name="3D View">
+        <gz-gui><title>3D View</title><property type="bool" key="showTitleBar">false</property></gz-gui>
+        <engine>ogre2</engine>
+        <scene>scene</scene>
+        <ambient_light>0.4 0.4 0.4</ambient_light>
+        <background_color>0.8 0.8 0.8</background_color>
+      </plugin>
+      <plugin filename="GzSceneManager" name="Scene Manager"/>
+      <plugin filename="InteractiveViewControl" name="Interactive view control"/>
+    </gui>
+
     <light type="directional" name="sun">
       <cast_shadows>true</cast_shadows>
       <pose>0 0 10 0 0 0</pose>
@@ -22,18 +34,25 @@
       <direction>-0.4 0.2 -0.9</direction>
     </light>
 
-    <model name="ground_plane">
+    <model name="invisible_ground_collision">
       <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><plane><normal>0 0 1</normal><size>50 50</size></plane></geometry>
+          <geometry>
+            <plane><normal>0 0 1</normal><size>60 60</size></plane>
+          </geometry>
+          <surface>
+            <friction><ode><mu>100.0</mu><mu2>100.0</mu2></ode></friction>
+          </surface>
         </collision>
-        <visual name="visual">
-          <geometry><plane><normal>0 0 1</normal><size>50 50</size></plane></geometry>
-          <material><ambient>0.6 0.4 0.3 1</ambient><diffuse>0.6 0.4 0.3 1</diffuse></material>
-        </visual>
       </link>
     </model>
+
+    <include>
+      <uri>martian_surface</uri>
+      <pose>0 0 -12.0 1.5708 0 0</pose>
+    </include>
 
     <model name="rock_1">
       <static>true</static>
@@ -81,18 +100,44 @@
 
     <model name="simple_rover">
       <pose>0 0 0.15 0 0 0</pose>
-
       <link name="chassis">
         <inertial>
           <mass>5.0</mass>
           <inertia><ixx>0.05</ixx><iyy>0.08</iyy><izz>0.1</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
         </inertial>
-        <collision name="chassis_collision">
-          <geometry><box><size>0.5 0.3 0.2</size></box></geometry>
-        </collision>
-        <visual name="chassis_visual">
-          <geometry><box><size>0.5 0.3 0.2</size></box></geometry>
-          <material><ambient>0.8 0.2 0.2 1</ambient><diffuse>0.8 0.2 0.2 1</diffuse></material>
+        <collision name="chassis_collision"><geometry><box><size>0.5 0.3 0.2</size></box></geometry></collision>
+
+        <!-- Main body -->
+        <visual name="chassis_visual"><geometry><box><size>0.5 0.3 0.2</size></box></geometry>
+          <material><ambient>0.78 0.72 0.6 1</ambient><diffuse>0.78 0.72 0.6 1</diffuse></material>
+        </visual>
+
+        <!-- Solar panel on top -->
+        <visual name="solar_panel_visual">
+          <pose>0.0 0 0.11 0 0 0</pose>
+          <geometry><box><size>0.42 0.34 0.02</size></box></geometry>
+          <material><ambient>0.08 0.1 0.25 1</ambient><diffuse>0.08 0.1 0.25 1</diffuse></material>
+        </visual>
+
+        <!-- Camera mast -->
+        <visual name="mast_visual">
+          <pose>0.15 0 0.26 0 0 0</pose>
+          <geometry><cylinder><radius>0.02</radius><length>0.22</length></cylinder></geometry>
+          <material><ambient>0.2 0.2 0.2 1</ambient><diffuse>0.2 0.2 0.2 1</diffuse></material>
+        </visual>
+
+        <!-- Camera head -->
+        <visual name="camera_head_visual">
+          <pose>0.15 0 0.38 0 0 0</pose>
+          <geometry><box><size>0.06 0.1 0.04</size></box></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+        </visual>
+
+        <!-- Antenna -->
+        <visual name="antenna_visual">
+          <pose>-0.15 0.1 0.28 0 0.3 0</pose>
+          <geometry><cylinder><radius>0.008</radius><length>0.25</length></cylinder></geometry>
+          <material><ambient>0.15 0.15 0.15 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
         </visual>
       </link>
 
@@ -101,7 +146,7 @@
         <inertial><mass>0.5</mass><inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia></inertial>
         <collision name="left_wheel_collision"><geometry><cylinder><radius>0.1</radius><length>0.05</length></cylinder></geometry></collision>
         <visual name="left_wheel_visual"><geometry><cylinder><radius>0.1</radius><length>0.05</length></cylinder></geometry>
-          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+          <material><ambient>0.08 0.08 0.08 1</ambient><diffuse>0.08 0.08 0.08 1</diffuse></material>
         </visual>
       </link>
 
@@ -110,7 +155,7 @@
         <inertial><mass>0.5</mass><inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia></inertial>
         <collision name="right_wheel_collision"><geometry><cylinder><radius>0.1</radius><length>0.05</length></cylinder></geometry></collision>
         <visual name="right_wheel_visual"><geometry><cylinder><radius>0.1</radius><length>0.05</length></cylinder></geometry>
-          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+          <material><ambient>0.08 0.08 0.08 1</ambient><diffuse>0.08 0.08 0.08 1</diffuse></material>
         </visual>
       </link>
 
@@ -118,24 +163,19 @@
         <pose>-0.2 0 -0.1 0 0 0</pose>
         <inertial><mass>0.2</mass><inertia><ixx>0.0001</ixx><iyy>0.0001</iyy><izz>0.0001</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia></inertial>
         <collision name="caster_collision"><geometry><sphere><radius>0.05</radius></sphere></geometry></collision>
-        <visual name="caster_visual"><geometry><sphere><radius>0.05</radius></sphere></geometry></visual>
+        <visual name="caster_visual"><geometry><sphere><radius>0.05</radius></sphere></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+        </visual>
       </link>
 
       <joint name="left_wheel_joint" type="revolute">
-        <parent>chassis</parent>
-        <child>left_wheel</child>
-        <axis><xyz>0 0 1</xyz></axis>
+        <parent>chassis</parent><child>left_wheel</child><axis><xyz>0 0 1</xyz></axis>
       </joint>
-
       <joint name="right_wheel_joint" type="revolute">
-        <parent>chassis</parent>
-        <child>right_wheel</child>
-        <axis><xyz>0 0 1</xyz></axis>
+        <parent>chassis</parent><child>right_wheel</child><axis><xyz>0 0 1</xyz></axis>
       </joint>
-
       <joint name="caster_joint" type="fixed">
-        <parent>chassis</parent>
-        <child>caster</child>
+        <parent>chassis</parent><child>caster</child>
       </joint>
 
       <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
@@ -150,7 +190,7 @@
       </plugin>
     </model>
 
-<model name="simple_drone">
+    <model name="simple_drone">
       <pose>0 0 0.5 0 0 0</pose>
       <link name="drone_body">
         <inertial>
@@ -158,8 +198,73 @@
           <inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.02</izz><ixy>0</ixy><ixz>0</ixz><iyz>0</iyz></inertia>
         </inertial>
         <collision name="body_collision"><geometry><box><size>0.3 0.3 0.1</size></box></geometry></collision>
+
+        <!-- Main body -->
         <visual name="body_visual"><geometry><box><size>0.3 0.3 0.1</size></box></geometry>
-          <material><ambient>0.2 0.2 0.8 1</ambient><diffuse>0.2 0.2 0.8 1</diffuse></material>
+          <material><ambient>0.95 0.45 0.05 1</ambient><diffuse>0.95 0.45 0.05 1</diffuse></material>
+        </visual>
+
+        <!-- 4 rotor arms (diagonal) -->
+        <visual name="arm_fr_visual">
+          <pose>0.25 0.25 0.02 0 0 0.7854</pose>
+          <geometry><cylinder><radius>0.015</radius><length>0.42</length></cylinder></geometry>
+          <material><ambient>0.15 0.15 0.15 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
+        </visual>
+        <visual name="arm_fl_visual">
+          <pose>-0.25 0.25 0.02 0 0 -0.7854</pose>
+          <geometry><cylinder><radius>0.015</radius><length>0.42</length></cylinder></geometry>
+          <material><ambient>0.15 0.15 0.15 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
+        </visual>
+        <visual name="arm_br_visual">
+          <pose>0.25 -0.25 0.02 0 0 -0.7854</pose>
+          <geometry><cylinder><radius>0.015</radius><length>0.42</length></cylinder></geometry>
+          <material><ambient>0.15 0.15 0.15 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
+        </visual>
+        <visual name="arm_bl_visual">
+          <pose>-0.25 -0.25 0.02 0 0 0.7854</pose>
+          <geometry><cylinder><radius>0.015</radius><length>0.42</length></cylinder></geometry>
+          <material><ambient>0.15 0.15 0.15 1</ambient><diffuse>0.15 0.15 0.15 1</diffuse></material>
+        </visual>
+
+        <!-- 4 rotor blades (flat, at end of each arm) -->
+        <visual name="blade_fr_visual">
+          <pose>0.42 0.42 0.04 0 0 0</pose>
+          <geometry><cylinder><radius>0.13</radius><length>0.01</length></cylinder></geometry>
+          <material><ambient>0.05 0.05 0.05 0.6</ambient><diffuse>0.05 0.05 0.05 0.6</diffuse></material>
+        </visual>
+        <visual name="blade_fl_visual">
+          <pose>-0.42 0.42 0.04 0 0 0</pose>
+          <geometry><cylinder><radius>0.13</radius><length>0.01</length></cylinder></geometry>
+          <material><ambient>0.05 0.05 0.05 0.6</ambient><diffuse>0.05 0.05 0.05 0.6</diffuse></material>
+        </visual>
+        <visual name="blade_br_visual">
+          <pose>0.42 -0.42 0.04 0 0 0</pose>
+          <geometry><cylinder><radius>0.13</radius><length>0.01</length></cylinder></geometry>
+          <material><ambient>0.05 0.05 0.05 0.6</ambient><diffuse>0.05 0.05 0.05 0.6</diffuse></material>
+        </visual>
+        <visual name="blade_bl_visual">
+          <pose>-0.42 -0.42 0.04 0 0 0</pose>
+          <geometry><cylinder><radius>0.13</radius><length>0.01</length></cylinder></geometry>
+          <material><ambient>0.05 0.05 0.05 0.6</ambient><diffuse>0.05 0.05 0.05 0.6</diffuse></material>
+        </visual>
+
+        <!-- Landing skids -->
+        <visual name="skid_left_visual">
+          <pose>0 0.12 -0.08 0 1.5708 0</pose>
+          <geometry><cylinder><radius>0.01</radius><length>0.3</length></cylinder></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+        </visual>
+        <visual name="skid_right_visual">
+          <pose>0 -0.12 -0.08 0 1.5708 0</pose>
+          <geometry><cylinder><radius>0.01</radius><length>0.3</length></cylinder></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+        </visual>
+
+        <!-- Camera underneath -->
+        <visual name="drone_camera_visual">
+          <pose>0 0 -0.07 0 0 0</pose>
+          <geometry><sphere><radius>0.03</radius></sphere></geometry>
+          <material><ambient>0.05 0.05 0.05 1</ambient><diffuse>0.05 0.05 0.05 1</diffuse></material>
         </visual>
       </link>
       <plugin filename="gz-sim-velocity-control-system" name="gz::sim::systems::VelocityControl">
