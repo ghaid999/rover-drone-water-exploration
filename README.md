@@ -28,8 +28,6 @@ each one, ranks them, and drives to the best.
 
 ## How it works
 
-![System workflow](docs/figures/system_flow_simple.png)
-
 **1. A model is trained offline, on real data.**
 A Random Forest classifier learns from 40 field-surveyed groundwater wells in the
 Shalatein region of Egypt, an arid area used here as an Earth analogue for Mars.
@@ -223,7 +221,6 @@ simulation/                     Gazebo world, rover, drone, terrain
 ros2_ws/src/rover_control/      rover node, mission leader
 ros2_ws/src/drone_control/      drone node, survey and scoring
 scripts/run_bridge.sh           ROS 2 to Gazebo topic bridge
-docs/                           report and figures
 ```
 
 ## Results
