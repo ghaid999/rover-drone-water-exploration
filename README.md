@@ -159,36 +159,28 @@ export LIBGL_ALWAYS_SOFTWARE=1
 
 ## Running a mission
 
-Five terminals, started in this order. Source the workspace
-(`source ~/rover_drone_project/ros2_ws/install/setup.bash`) in terminals 3 to 5.
+four terminals, started in this order. Source the workspace
+(`source ~/rover_drone_project/ros2_ws/install/setup.bash`) in terminals 3 to 4.
 
 **1 — Simulation server**
 ```bash
 cd simulation/worlds && gz sim -s -r rover_drone_world.sdf
 ```
 
-**2 — Graphical view**
-```bash
-gz sim -g
-```
-
-**3 — ROS 2 to Gazebo bridge**
+**2 — ROS 2 to Gazebo bridge**
 ```bash
 ./scripts/run_bridge.sh
 ```
 
-**4 — Drone node** (wait for `Drone node ready`)
+**3 — Drone node** (wait for `Drone node ready`)
 ```bash
 ros2 run drone_control drone_node --ros-args -p use_sim_time:=true
 ```
 
-**5 — Rover node**
+**4 — Rover node**
 ```bash
 ros2 run rover_control rover_node --ros-args -p use_sim_time:=true
 ```
-
-A full mission takes roughly 15 minutes of wall-clock time, as the simulation
-runs below real time.
 
 > **The `/clock` topic must be bridged.** With `use_sim_time:=true` and no
 > `/clock`, a node's timer never fires and the rover sits still with no error
@@ -255,7 +247,3 @@ licence.
 
 The groundwater dataset is from the Zenodo record above; please cite the
 accompanying publication if you use it.
-
-## Licence
-
-MIT, see `LICENSE`. Third-party assets keep their own terms.
