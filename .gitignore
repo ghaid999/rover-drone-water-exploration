@@ -1,10 +1,23 @@
-*.pkl
+# --- Python ---
 __pycache__/
-build/
-install/
-log/
+*.py[cod]
+.venv/
+venv/
+
+# --- ROS 2 build artefacts ---
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# --- Raw dataset (~4.6 GB), downloaded separately; see README ---
 data/groundwater_dataset/Shalatein Paper/
 data/groundwater_dataset/*.zip
-data/swed_sample/train/
-data/swed_sample/test/
-data/swed_sample/*.zip
+
+# --- Trained models: keep the final one, ignore experiments ---
+*.pkl
+!ai_model/groundwater_potential_model.pkl
+
+# --- Scratch ---
+testfile
+*.backup
+.DS_Store

@@ -1,0 +1,18 @@
+# Python dependencies for the AI-assisted rover-drone water-potential system.
+#
+# ROS 2 (Lyrical Luth) and Gazebo (Jetty) are system packages and are not
+# installable through pip. See README.md for their installation.
+#
+#   pip install -r requirements.txt --break-system-packages
+
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10
+
+# Model training and evaluation
+scikit-learn>=1.3
+
+# Geospatial raster sampling and vector data
+rasterio>=1.3
+geopandas>=0.14
+shapely>=2.0
